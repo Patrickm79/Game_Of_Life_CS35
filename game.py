@@ -47,7 +47,7 @@ while True:
     board.draw_status_bar()
 
     # Draw aspect ratio'd cells
-    line.draw(screen, x, cell_size.width, cell_size.height, 1)
+    line.draw(screen, x, cell_size.width, cell_size.height, 0)
 
     # Allow user to quit
     for event in pygame.event.get():
