@@ -33,7 +33,8 @@ class Board:
         self._cell_size = number_of_cells
 
     def draw_grid(self):
-        
+        self.increase_generation()
+
         from game import window_height
         from game import window_width
         from game import screen
@@ -46,9 +47,8 @@ class Board:
                 rect = pygame.Rect(x*self.cell_size().width, y*self.cell_size().height,
                 self.cell_size().width, self.cell_size().height)
 
-                print(y*self.cell_size().height)
-
                 pygame.draw.rect(screen, black, rect, 1)
 
     def draw_status_bar(self):
-        pass
+        pygame.display.set_caption(f"Generation: {self._generation}")
+        # Move to lower right under grid, and option to change window size, cells, etc.

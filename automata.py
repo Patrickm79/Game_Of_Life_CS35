@@ -33,7 +33,15 @@ class Line_Draw(Automata):
     def __init__(self, ):
         super().__init__()
         
-    def draw(self, screen, x, cell_size):
-        pygame.draw.circle(screen, self._color, (x, cell_size//2), 15, 2)
-        pygame.draw.circle(screen, self._color, (x, int(cell_size*1.5)), 15, 2)
-        pygame.draw.circle(screen, self._color, (x, int(cell_size*2.5)), 15, 2)
+    def draw(self, surface, x, width, height, row):
+
+        center_y = height//2
+        if width > height:
+            radius = height//2
+        else:
+            radius = width//2
+
+        pygame.draw.circle(surface, self._color, (x, int( center_y)), radius, 2)
+        pygame.draw.circle(surface, self._color, (x, int( height + center_y)), radius, 2)
+        pygame.draw.circle(surface, self._color, (x, int( (height*2) + center_y)), radius, 2)
+        
