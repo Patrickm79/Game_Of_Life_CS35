@@ -11,9 +11,7 @@ class Board:
         self._generation = generation
         self._user_interaction_enabled = True
         self._number_of_cells = number_of_cells
-        self._cell_size = window_width//number_of_cells
-        self._size = window_width
-        self._window_size = Size(window_width, window_height)
+        self._size = Size(window_width, window_height)
 
     def size(self):
         return self._size
