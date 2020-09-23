@@ -35,20 +35,23 @@ x = cell_size.width//2
 # Draw using the Line_Draw class
 line = Line_Draw()
 
+def handle_events():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
 while True:
     # Create a standard to measure fps with (in this case sys clock)
     dt = clock.tick(fps)
-
     # Fill the screen with a color
     screen.fill(white)
-
     # Draw grids
     board.draw_grid()
-    board.draw_status_bar()
-
     # Draw aspect ratio'd cells
-    line.draw(screen, x, cell_size.width, cell_size.height, 0)
-
+    line.draw(screen, x, cell_size.width, cell_size.height, 0, 3)
+    # capture events
+    handle_events()
     # Allow user to quit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

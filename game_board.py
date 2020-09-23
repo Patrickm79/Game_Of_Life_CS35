@@ -1,4 +1,6 @@
 import pygame
+import message
+from message import Position
 
 
 class Size:
@@ -11,7 +13,8 @@ class Board:
         self._generation = generation
         self._user_interaction_enabled = True
         self._number_of_cells = number_of_cells
-        self._size = Size(window_width, window_height)
+        self.status_bar_height = 80
+        self._size = Size(window_width, window_height-self.status_bar_height)
 
     def size(self):
         return self._size
@@ -48,7 +51,20 @@ class Board:
                 self.cell_size().width, self.cell_size().height)
 
                 pygame.draw.rect(screen, black, rect, 1)
+                self.draw_status_bar(screen)
 
-    def draw_status_bar(self):
+    def draw_status_bar(self, screen):
+        from game import white
+        pygame.display.set_caption(f"Conway's Game of Life")
+        
+        status_bar = pygame.Surface((self._size.width, self.status_bar_height))
+
+        status_bar.fill(white)
+
+        message.message_display(f"Generation: {self._generation}", status_bar, 
+        Position(status_bar.get_rect().width, status_bar.get_rect().height))
+
+        screen.blit(status_bar, (0, self._size.height)) 
+
         pygame.display.set_caption(f"Generation: {self._generation}")
         # Move to lower right under grid, and option to change window size, cells, etc.
