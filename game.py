@@ -9,7 +9,7 @@ import webbrowser
 
 pygame.init()
 
-board = Board(0, window_width, window_height, 1, 50)
+board = Board(0, window_width, window_height, 1, 100)
 
 # MARK: Run Loop
 i=0
