@@ -1,80 +1,74 @@
 import pygame
-from public_UI import white
+from public_UI import white, black, screen
+from message import *
 
 blue = (0,0,200)
 red = (200,50,50)
 
-class Automata:
-    #init = alive
-    def __init__(self):
-        self._alive = True
-        # TODO: Find a more specific color
+class GridCell:
+    def __init__(self, x, y, width, height):
+        super().__init__()
+        #pos
+        self.x = x
+        self.y = y
+        #size
+        self.width = width
+        self.height = height
+        #state
+        self._alive = False
         self._color = blue
         self.neighbors = 0
-    
-    def kill(self):
-        self._color = red
-        self._alive = False
+        self.drawn = False
+        self.surface = pygame.Surface((width, height), pygame.SRCALPHA)
 
-    def revive(self):
-        self._color = blue
+    def __str__(self):
+        return (f"x: {self.x}, y: {self.y}, width: {self.width}, color: {self.color}, alive: {self.alive}")
+
+    def _draw_circle(self):
         self._alive = True
+        pygame.draw.ellipse(self.surface, self._color, self.surface.get_rect())
+
+    def _clear_circle(self):
+        self._alive = False
+        pygame.draw.ellipse(self.surface, white, self.surface.get_rect())
+
+
+    def draw(self):
+        rect = pygame.Rect(0,0, self.width, self.height)
+
+        screen.blit(self.surface, (self.x, self.y))
+        #pygame.draw.rect(self.surface, black, rect, 1)
 
     def is_alive(self):
-        # returns true if alive, false if dead
         return self._alive
 
     def get_color(self):
         return self._color
 
+    def kill(self):
+        if self._alive:
+            self._color = red
+            self._alive = False
+            self._draw_circle()
+
+    def revive(self):
+        self._color = blue
+        self._alive = True        
+
     def change_color(self, color):
-        # add (RGB functionality to this)
         self._color = color
 
+class Automata:
+    #set initial state to alive
+    def __init__(self, num, name):
+        self.cells: GridCell = [None for num in range(num)]
+        self.name = name
 
-class GridCell(Automata):
-    def __init__(self, x, y, width, height):
-        super().__init__()
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.drawn = False
-        self.surface = pygame.Surface((width, height), pygame.SRCALPHA)
+class Blinker(Automata):
+    def __init__(self, cell_array):
+        super().__init__(len(cell_array), "Blinker")
+        self.cells = cell_array
 
-    def _draw_circle(self):
-        self.drawn = True
-        center_y = self.height//2
-        center_x = self.width//2
-        if self.width > self.height:
-            radius = self.height//2
-        else:
-            radius = self.width//2
-
-        return pygame.draw.circle(self.surface, self._color, (center_x, center_y), radius)
-
-    def _clear_circle(self):
-        self.drawn = False
-        center_y = self.height//2
-        center_x = self.width//2
-        if self.width > self.height:
-            radius = self.height//2
-        else:
-            radius = self.width//2
-        pygame.draw.circle(self.surface, white, (center_x, center_y), radius)
-
-
-    def draw(self):
-        from game import screen, black
-        rect = pygame.Rect(0,0, self.width, self.height)
-
-        screen.blit(self.surface, (self.x, self.y))
-        return pygame.draw.rect(self.surface, black, rect, 1)
-
-class Line_Draw(Automata):
-    def __init__(self):
-        super().__init__()
-
-    def draw_blink(self, surface, x, width, height, starting_row, count):        
-        for row_num in range(starting_row, count):
-            self._draw_circle(surface, x, width, height, row_num)
+    def draw_blink(self):        
+        for cell in self.cells:
+            cell._draw_circle()
