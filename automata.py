@@ -29,21 +29,38 @@ class Automata:
         # add (RGB functionality to this)
         self._color = color
 
-    def _draw_circle(self, surface, x, width, height, row):
 
-        center_y = height//2
-        if width > height:
-            radius = height//2
+class GridCell(Automata):
+    def __init__(self, x, y, width, height):
+        super().__init__()
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.surface = pygame.Surface((width, height), pygame.SRCALPHA)
+
+    def _draw_circle(self):
+        center_y = self.height//2
+        if self.width > self.height:
+            radius = self.height//2
         else:
-            radius = width//2
-        return pygame.draw.circle(surface, self._color, (x, int(row*height + center_y)), radius)
+            radius = self.width//2
+
+        return pygame.draw.circle(self.surface, self._color, (self.width//2, center_y), radius)
+
+
+    def draw(self):
+        from game import screen, black
+        rect = pygame.Rect(0,0, self.width, self.height)
+
+        screen.blit(self.surface, (self.x, self.y))
+        return pygame.draw.rect(self.surface, black, rect, 1)
 
 class Line_Draw(Automata):
-    def __init__(self, ):
+    def __init__(self):
         super().__init__()
         self.cells = []
 
     def draw(self, surface, x, width, height, starting_row, count):        
-        #surface, color, (x,y), radius, width
         for row_num in range(starting_row, count):
-            self.cells.append( self._draw_circle(surface, x, width, height, row_num) )
+            self.cells.append(self._draw_circle(surface, x, width, height, row_num) )

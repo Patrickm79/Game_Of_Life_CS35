@@ -3,6 +3,17 @@ import pygame
 import sys
 from game_board import Board
 from automata import Line_Draw
+import message
+
+class Size:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+class Position:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
 pygame.init()
 
@@ -21,6 +32,8 @@ clock = pygame.time.Clock()
 fps = 5
 black = (0, 0, 0)
 white = (245, 245, 245)
+red = (225, 0, 0)
+cyan = (0, 186, 186)
 
 # Create board with paramaters defined above
 board = Board(0, window_width, window_height, 25)
@@ -35,21 +48,49 @@ x = cell_size.width//2
 # Draw using the Line_Draw class
 line = Line_Draw()
 
+pause = False
+
+def paused():
+    global pause
+    while pause:
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    unpause()
+        pause_line_1 = message.message_display("Paused".upper(), screen, Position(board_size.width//2, board_size.height//2), red)
+        #line 2
+        message.message_display("(press 'p' to continue)", screen, Position(board_size.width//2, board_size.height//2 + pause_line_1.height), cyan)
+        pygame.display.update()
+        clock.tick(15)
+
+def unpause():
+    global pause
+    pause = False
+
 def handle_events():
+    global pause
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_p:
+                pause = True
+                paused()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    mouse_pos = pygame.mouse.get_pos()
+                    board.get_cell_num_for_pos(0, Position(mouse_pos[0], mouse_pos[1]))._draw_circle()
 while True:
     # Create a standard to measure fps with (in this case sys clock)
     dt = clock.tick(fps)
     # Fill the screen with a color
     screen.fill(white)
     # Draw grids
-    board.draw_grid()
-    # Draw aspect ratio'd cells
-    line.draw(screen, x, cell_size.width, cell_size.height, 0, 3)
+    board.draw_grid(0)
     # capture events
     handle_events()
     # Allow user to quit
