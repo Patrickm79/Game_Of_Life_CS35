@@ -7,7 +7,7 @@ from public_UI import *
 
 pygame.init()
 
-board = Board(0, window_width, window_height, None, 100)
+board = Board(0, window_width, window_height, None, 50)
 
 pause = False
 
@@ -50,17 +50,13 @@ def handle_events():
                 if event.button == 0:
                     mouse_pos = pygame.mouse.get_pos()
                     board.get_cell_num_for_pos(0, Position(mouse_pos[0], mouse_pos[1]))[0]._draw_circle()
-                    board.grids[0][(board._number_of_cells*board._number_of_cells)//2]._draw_circle()
+                    board.grids[0][(board._number_of_cells*board._number_of_cells)//2-1]._draw_circle()
                     board.grids[0][(board._number_of_cells*board._number_of_cells)//2+1]._draw_circle()
                     board.grids[0][(board._number_of_cells*board._number_of_cells)//2+2]._draw_c
 
-                    # board.grids[0][24]._draw_circle()
-                    # board.grids[0][25]._draw_circle()
-                    # board.grids[0][31]._draw_circle()
 while True:
     dt = clock.tick(fps)
 
-    screen.fill(white)
     board.increase_generation()
 
     board.draw_grid(board.active_grid)

@@ -21,8 +21,8 @@ red = (255, 0, 0)
 cyan = (0,186,186)
 
 # MARK: Screen Parameters
-window_height = 800
-window_width = 800
+window_height = 1000
+window_width = 1000
 screen = pygame.display.set_mode((window_width, window_height))
 clock = pygame.time.Clock()
 fps = 1 

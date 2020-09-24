@@ -45,7 +45,7 @@ class Board:
     def get_generation(self):
         return self._generation
 
-    def get_cell_num_for_pos(self, grid_num, position=Position(0,0)):
+    def get_cell_for_pos(self, grid_num, position=Position(0,0)):
         column = position.x//self.cell_size().width
         row = position.y//self.cell_size().height
         cell_index = (self._number_of_cells*column)+row
@@ -58,11 +58,10 @@ class Board:
 
         except IndexError:
             cell = None
-            print(f"No cell num for {position}")
         return (cell, cell_index)
 
     def check_cell_neighbors(self, cell):
-        cell_index = self.get_cell_num_for_pos(self.active_grid, Position(cell.x, cell.y))[1]
+        cell_index = self.get_cell_for_pos(self.active_grid, Position(cell.x, cell.y))[1]
         neighbor_list = []
         cell.neighbors = 0
 
@@ -76,47 +75,17 @@ class Board:
         south_east = Position(east.x, south.y)
         south_west = Position(west.x, south.y)
 
-        north_neighbor = self.get_cell_num_for_pos(self.active_grid, north)[0]
+        north_neighbor = self.get_cell_for_pos(self.active_grid, north)[0]
+        south_neighbor = self.get_cell_for_pos(self.active_grid, south)[0]
+        east_neighbor = self.get_cell_for_pos(self.active_grid, east)[0]
+        west_neighbor = self.get_cell_for_pos(self.active_grid, west)[0]
+        
 
-        if north_neighbor is not None and north_neighbor.is_alive():
-            print(f"my index: {cell_index}, north neighbor index: {self.get_cell_num_for_pos(self.active_grid, north)[1]}")
-
-        south_neighbor = self.get_cell_num_for_pos(self.active_grid, south)[0]
-
-        if south_neighbor is not None and south_neighbor.is_alive():
-            print(f"my index: {cell_index}, south neighbor index: {self.get_cell_num_for_pos(self.active_grid, south)[1]}")
-
-        east_neighbor = self.get_cell_num_for_pos(self.active_grid, east)[0]
-        if cell.is_alive():
-            print(f"east neighbor index: {self.get_cell_num_for_pos(self.active_grid, east)[1]}")
-        west_neighbor = self.get_cell_num_for_pos(self.active_grid, west)[0]
-        if cell.is_alive():
-            print(f"west neighbor index: {self.get_cell_num_for_pos(self.active_grid, west)[1]}")
-
-        east_neighbor = self.get_cell_num_for_pos(self.active_grid, east)[0]        
-        if east_neighbor is not None and east_neighbor.is_alive():
-           print(f"my index: {cell_index}, east neighbor index: {self.get_cell_num_for_pos(self.active_grid, east)[1]}")
-
-        west_neighbor = self.get_cell_num_for_pos(self.active_grid, west)[0]
-        if west_neighbor.is_alive() and west_neighbor is not None:
-            print(f"my index: {cell_index}, west neighbor index: {self.get_cell_num_for_pos(self.active_grid, west)[1]}")
-
-        north_east_neighbor = self.get_cell_num_for_pos(self.active_grid, north_east)[0]
-        if north_east_neighbor is not None and north_east_neighbor.is_alive():
-            print(f"my index: {cell_index}, north_east neighbor index: {self.get_cell_num_for_pos(self.active_grid, north_east)[1]}")
-
-        north_west_neighbor = self.get_cell_num_for_pos(self.active_grid, north_west)[0]
-        if north_west_neighbor is not None and north_west_neighbor.is_alive():
-            print(f"my index: {cell_index}, north_west neighbor index: {self.get_cell_num_for_pos(self.active_grid, north_west)[1]}")
-
-        south_east_neighbor = self.get_cell_num_for_pos(self.active_grid, south_east)[0]
-        if south_east_neighbor is not None and south_east_neighbor.is_alive():
-            print(f"my index: {cell_index}, south_east neighbor index: {self.get_cell_num_for_pos(self.active_grid, south_east)[1]}")
-
-        south_west_neighbor = self.get_cell_num_for_pos(self.active_grid, south_west)[0]
-        if south_west_neighbor is not None and south_west_neighbor.is_alive():
-            print(f"my index: {cell_index}, south_west neighbor index: {self.get_cell_num_for_pos(self.active_grid, south_west)[1]}")            
-
+        north_east_neighbor = self.get_cell_for_pos(self.active_grid, north_east)[0]
+        north_west_neighbor = self.get_cell_for_pos(self.active_grid, north_west)[0]
+        south_east_neighbor = self.get_cell_for_pos(self.active_grid, south_east)[0]
+        south_west_neighbor = self.get_cell_for_pos(self.active_grid, south_west)[0]
+        
         neighbor_list.append(north_neighbor)
         neighbor_list.append(south_neighbor)
         neighbor_list.append(east_neighbor)
@@ -130,9 +99,6 @@ class Board:
         for neighbor in neighbor_list:
             if neighbor is not None and neighbor.is_alive():
                 cell.neighbors += 1
-
-        if cell.neighbors is not 0:
-            print(f"{cell.neighbors}")
 
         self.grids[self.inactive_grid()][cell_index] = copy(cell)
 
@@ -154,7 +120,6 @@ class Board:
 
             self.check_cell_neighbors(cell)
 
-            #self.grids[self.inactive_grid()][index] = next_generation
         self.active_grid = self.inactive_grid()
 
     def is_interactable(self):

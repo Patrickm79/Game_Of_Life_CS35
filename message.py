@@ -1,17 +1,14 @@
 # Display helper for messaging
 
 import pygame
-class Position:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+from public_UI import Position, black
 
 def text_objects(text, font, color):
 
     textSurface = font.render(text, True, color)
     return textSurface, textSurface.get_rect()
 
-def message_display(text, surface, position=Position(0,0), color = (0,0,0)):
+def message_display(text, surface, position=Position(0,0), color = black):
 
     largeText = pygame.font.Font('freesansbold.ttf',15)
     TextSurf, TextRect = text_objects(text, largeText, color)
@@ -35,7 +32,7 @@ def message_display(text, surface, position=Position(0,0), color = (0,0,0)):
     surface.blit(TextSurf, TextRect)
     return TextRect
 
-def draw_button(text, coords, surface, border_color=(0,0,0), text_color=(0,0,0), fill_color=None, padding=20, border=True):
+def draw_button(text, coords, surface, border_color=None, text_color=black, fill_color=None, padding=20):
 
     if fill_color == None:
             fill_color = surface.fill_color
@@ -46,7 +43,7 @@ def draw_button(text, coords, surface, border_color=(0,0,0), text_color=(0,0,0),
     text_rect = text_objs[1]
     rect = pygame.Rect(coords, (text_rect.width + int(padding), text_rect.height))
 
-    if border == True:
+    if border_color != None:
         pygame.draw.rect(surface, border_color, rect, 1)
     pygame.draw.rect(surface, fill_color, rect)
     surface.blit(text_surface, (coords[0] + padding//2, coords[1]))
