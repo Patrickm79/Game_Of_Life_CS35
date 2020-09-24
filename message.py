@@ -32,7 +32,7 @@ def message_display(text, surface, position=Position(0,0), color = black):
     surface.blit(TextSurf, TextRect)
     return TextRect
 
-def draw_button(text, coords, surface, border_color=None, text_color=black, fill_color=None, padding=20):
+def Button(text, coords, surface, border_color=None, text_color=black, fill_color=None, padding=20):
 
     if fill_color == None:
             fill_color = surface.fill_color

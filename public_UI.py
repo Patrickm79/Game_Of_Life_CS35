@@ -19,10 +19,18 @@ black = (0, 0, 0)
 white = (245, 245, 245)
 red = (255, 0, 0)
 cyan = (0,186,186)
+gray = (105, 105, 105)
+blue = (0, 0, 204)
+green = (0, 204, 0)
+
+fill_color = black
+dead_color = fill_color
+alive_color = red
 
 # MARK: Screen Parameters
-window_height = 1000
-window_width = 1000
+window_height = 800
+window_width = 800
 screen = pygame.display.set_mode((window_width, window_height))
 clock = pygame.time.Clock()
-fps = 1 
+fps = 2 
+pause = True

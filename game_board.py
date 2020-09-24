@@ -1,91 +1,99 @@
 import pygame
 import random
 import message
-from message import Position
+from message import Button
 from automata import GridCell
-from public_UI import Position, white, black, Size, screen
+from public_UI import *
 from copy import copy
 
 class Board:
-    def __init__(self, generation, window_width, window_height, board_style=0, number_of_cells=25):
+   
+    def __init__(self, generation, window_width, window_height, board_style=0, num_cells=50):        
         self._generation = generation
-        self._user_interaction_enabled = True
-        self._number_of_cells = number_of_cells
+        self._is_user_interaction_enabled = False
+        self._num_cells = num_cells
         self.status_bar_height = 80
-        self._size = Size(window_width, window_height-self.status_bar_height)
+        self.__size = Size(window_width, window_height-self.status_bar_height)
+        self.surface = pygame.Surface((self.size().width, self.size().height))
         self.active_grid = 0
         self.__init_grids__()
         self.set_active_grid(board_style)
         self.draw_grid(self.active_grid)
-
+        self.status_bar = pygame.Surface((self.size().width, self.status_bar_height))
+        self.pause_button()
+        self.clear_button()
+        self.randomize_button()
+        
     def __str__(self):
-        return(f"board#: {self.active_grid}, width: {self.size().width}, height: {self.size().height},  with number of cells(sq): {self._number_of_cells}")
+        return(f"board#: {self.active_grid}, width: {self.size().width}, height: {self.size().height}, with number of cells(sq): {self._num_cells}")
 
     def __init_grids__(self):
+        
         self.grids = [
-            [None for x in range(self._number_of_cells*self._number_of_cells)],
-            [None for x in range(self._number_of_cells*self._number_of_cells)]
+            [None for x in range(self._num_cells*self._num_cells)],
+            [None for x in range(self._num_cells*self._num_cells)]
         ]        
-        for x in range(self._number_of_cells):            
-            for y in range(self._number_of_cells):
+        for x in range(self._num_cells):            
+            for y in range(self._num_cells):
                 rect = GridCell(x*self.cell_size().width, y*self.cell_size().height, self.cell_size().width, self.cell_size().height)
                 rect = GridCell(x*self.cell_size().width, y*self.cell_size().height, self.cell_size().width, self.cell_size().height)
-                self.grids[0][(self._number_of_cells*x)+y] = rect
-                #self.grids[1][(self._number_of_cells*x)+y] = rect
-
-    def inactive_grid(self):
-        return (self.active_grid +1) %2
+                self.grids[0][(self._num_cells*x)+y] = rect
 
     def size(self):
-        return self._size
+        return self.__size
 
     def cell_size(self):
-        return Size(self._size.width//self._number_of_cells, self._size.height//self._number_of_cells)
+        return Size(self.__size.width//self._num_cells, self.__size.height//self._num_cells)
 
     def get_generation(self):
         return self._generation
 
+    def inactive_grid(self):
+        return (self.active_grid +1) %2
+
     def get_cell_for_pos(self, grid_num, position=Position(0,0)):
+
         column = position.x//self.cell_size().width
         row = position.y//self.cell_size().height
-        cell_index = (self._number_of_cells*column)+row
-
-        try:
+        cell_index = (self._num_cells*column)+row
+        try: 
             cell = self.grids[grid_num][cell_index]
-
             if cell.is_alive():
-                print(f"row: {row}, column: {column}, index: {cell_index}")
-
+                pass
         except IndexError:
-            cell = None
+            cell = None  
+        
         return (cell, cell_index)
 
     def check_cell_neighbors(self, cell):
+
         cell_index = self.get_cell_for_pos(self.active_grid, Position(cell.x, cell.y))[1]
+        
         neighbor_list = []
         cell.neighbors = 0
 
-        north = Position(cell.x, cell.y - self.cell_size().height)
-        south = Position(cell.x, cell.y + self.cell_size().height)
-        east = Position(cell.x + self.cell_size().width, cell.y)
-        west = Position(cell.x - self.cell_size().width, cell.y)
+        padding = self._num_cells//100
+
+        north = Position(cell.x, cell.y - padding - self.cell_size().height)
+        south = Position(cell.x, cell.y + padding + self.cell_size().height)
+        east = Position(cell.x + padding + self.cell_size().width, cell.y)
+        west = Position(cell.x - padding - self.cell_size().width, cell.y)
 
         north_east = Position(east.x, north.y)
         north_west = Position(west.x, north.y)
         south_east = Position(east.x, south.y)
         south_west = Position(west.x, south.y)
 
-        north_neighbor = self.get_cell_for_pos(self.active_grid, north)[0]
+        north_neighbor = self.get_cell_for_pos(self.active_grid, north)[0]        
         south_neighbor = self.get_cell_for_pos(self.active_grid, south)[0]
         east_neighbor = self.get_cell_for_pos(self.active_grid, east)[0]
         west_neighbor = self.get_cell_for_pos(self.active_grid, west)[0]
-        
 
         north_east_neighbor = self.get_cell_for_pos(self.active_grid, north_east)[0]
         north_west_neighbor = self.get_cell_for_pos(self.active_grid, north_west)[0]
         south_east_neighbor = self.get_cell_for_pos(self.active_grid, south_east)[0]
         south_west_neighbor = self.get_cell_for_pos(self.active_grid, south_west)[0]
-        
+
         neighbor_list.append(north_neighbor)
         neighbor_list.append(south_neighbor)
         neighbor_list.append(east_neighbor)
@@ -95,47 +103,38 @@ class Board:
         neighbor_list.append(north_west_neighbor)
         neighbor_list.append(south_east_neighbor)
         neighbor_list.append(south_west_neighbor)
-
+        
         for neighbor in neighbor_list:
             if neighbor is not None and neighbor.is_alive():
                 cell.neighbors += 1
 
         self.grids[self.inactive_grid()][cell_index] = copy(cell)
 
-        if cell.is_alive():
+        if cell.is_alive():            
             if cell.neighbors == 2 or cell.neighbors == 3:                                
-                self.grids[self.inactive_grid()][cell_index].revive()  
-            else:
+                self.grids[self.inactive_grid()][cell_index].revive()           
+            else:  
                 self.grids[self.inactive_grid()][cell_index].kill()
+
         else:
             if cell.neighbors == 3:
                 self.grids[self.inactive_grid()][cell_index].revive()
 
-
     def increase_generation(self):
         self._generation += 1
-
-        for index in range(self._number_of_cells*self._number_of_cells):
+        for index in range(self._num_cells*self._num_cells):
             cell = self.grids[self.active_grid][index]
 
             self.check_cell_neighbors(cell)
-
         self.active_grid = self.inactive_grid()
 
     def is_interactable(self):
-        return self._user_interaction_enabled
-
-    def set_board_size(self, number_of_cells):
-        self._number_of_cells = number_of_cells
-        self._cell_size = number_of_cells
-
+        return self._is_user_interaction_enabled                
+        
     def set_active_grid(self, choice=None):
-        self.increase_generation()
-
-        from game import window_height
-        from game import window_width
-
-        self._user_interaction_enabled = False
+        
+        for grid in self.grids[self.active_grid]:
+                grid.draw()
 
         if choice == None:
             for grid in self.grids[self.active_grid]:
@@ -147,36 +146,56 @@ class Board:
                 grid._draw_circle()
         else:
             for grid in self.grids[self.active_grid]:
-                grid._clear_circle()
-    
-    def draw_grid(self, grid_num):                
-        self._is_user_interaction_enabled = False
+                grid._clear_circle()          
 
+
+    def draw_grid(self, grid_num):        
         for grid in self.grids[grid_num]:
-            grid.draw()
+            grid.draw()            
             if grid.is_alive():
                 grid._draw_circle()
             else: 
-                grid._clear_circle()
-
+                grid._clear_circle()                         
         self.draw_status_bar(screen)
 
     def draw_status_bar(self, screen):
-        from game import white
-        from message import draw_button
-
+    
+        from message import Button
+        
         pygame.display.set_caption(f"Conway's Game of Life")
+        status_bar = pygame.Surface((self.__size.width, self.status_bar_height))        
+        status_bar.fill(dead_color)
+        self.status_bar = status_bar
+        self.pause_button()        
+        self.clear_button()
+        self.randomize_button()
+        message.message_display(f"Generation: {self._generation}", status_bar, Position(status_bar.get_rect().width, status_bar.get_rect().height), white)
+        screen.blit(self.status_bar, (0, self.size().height))
 
-        status_bar = pygame.Surface((self._size.width, self.status_bar_height))
+    def clear(self):
+        for board in self.grids:
+            for grid in board:
+                if grid != None:                
+                    grid._clear_circle()
+                    grid.draw()
 
-        status_bar.fill(white)
 
-        message.message_display(f"Generation: {self._generation}", status_bar, 
-        Position(status_bar.get_rect().width, status_bar.get_rect().height))
+    def pause_button(self):
+        if pause:
+            self.pauseBtn = Button("Play", (self.status_bar.get_rect().width//2, 0), self.status_bar, border_color=black, fill_color=green, text_color = white)
+        else:            
+            self.pauseBtn = Button("Pause", (self.status_bar.get_rect().width//2, 0), self.status_bar, border_color=black, fill_color=green, text_color = white)
 
-        test_button = draw_button("test", (0,0), status_bar, (255,0,0), fill_color=(255,0,0), text_color = white)
+    def clear_button(self):
+        self.clearBtn = Button("Clear Board", (self.pauseBtn.x + self.pauseBtn.width + 8, 0), self.status_bar, border_color=black, fill_color=red, text_color=white)
 
-        screen.blit(status_bar, (0, self._size.height)) 
+    def randomize_button(self):
+        self.randomizeBtn = Button("Randomize", (8, 0), self.status_bar, border_color=black, fill_color=cyan, text_color=white)
 
-        pygame.display.set_caption(f"Generation: {self._generation}")
-        # Move to lower right under grid, and option to change window size, cells, etc.
+    def draw_rects(self, grid_num):
+        for grid in self.grids[grid_num]:
+             pygame.draw.rect(grid.surface, gray, grid.surface.get_rect(), 1)
+
+    def clear_rects(self, grid_num):
+        for grid in self.grids[grid_num]:
+            pygame.draw.rect(grid.surface, dead_color, grid.surface.get_rect(), 1)
