@@ -37,14 +37,14 @@ When a cell reaches a certain age, it dies and a new cell is immediately born in
 
 # Conway's Game of Life with pygame/Python
 
-<a href="https://conways-game-of-life.webflow.io/">"Marketing" Page</a>
+<a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"></a>
 
 Conway's Game of Life meets the criteria of always being in one state which is an
 element in a set of predefined, finite states. The head is also always in a single
 location since we're in a run loop that only ends on the condition that we want
 it to end (as it would be with turning off a machine)
 
-<a href="https://en.citizendium.org/wiki/Turing_Machine">"Turing reference</a>
+<a href="https://en.citizendium.org/wiki/Turing_Machine">Turing reference</a>
 
 
 # Some future goals:

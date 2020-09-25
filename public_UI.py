@@ -32,5 +32,5 @@ window_height = 800
 window_width = 800
 screen = pygame.display.set_mode((window_width, window_height))
 clock = pygame.time.Clock()
-fps = 2 
+fps = 15
 pause = True
