@@ -37,7 +37,7 @@ When a cell reaches a certain age, it dies and a new cell is immediately born in
 
 # Conway's Game of Life with pygame/Python
 
-<a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"></a>
+<a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Wikipedia reference</a>
 
 Conway's Game of Life meets the criteria of always being in one state which is an
 element in a set of predefined, finite states. The head is also always in a single
